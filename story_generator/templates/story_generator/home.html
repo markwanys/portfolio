@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <link rel="stylesheet" href="{{ url_for('story.static', filename='css/style.css') }}"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  </head>
+
+  <body class="container" style="background: #000;" onload="typeWriter()">
+    <div class="login">
+      <h1>Story Generator</h1>
+      <form id="form" action="{{url_for('story.predict')}}" method="post">
+        <select id="1" class="input" type="text" name="genre" placeholder="genre" required>
+            <option value="">Choose Genre</option>
+            <option value="seuss">seuss</option>
+            <option value="shakespeare">shakespeare</option>
+        </select>
+        <br>
+        <select id="2" class="input" type="number" name="num_words" placeholder="num_words" required>
+          <option value="">Choose # of words to generate</option>
+          <option value="100">100</option>
+          <option value="300">300</option>
+          <option value="500">500</option>
+        </select>
+        <br>
+        <input id="3" type="text" name="seed text" placeholder="seed text" required="required">
+        <input id="4" type="number" min="0" name="seed" placeholder="seed" required="required">
+        <button id="submitButton" type="submit" class="btn btn-primary btn-block btn-large">Generate Story</button>
+      </form>
+      
+      <p id="demo" class="output"></p>
+      
+      <script>
+        function decodeHtml(html) {
+          var txt = document.createElement("textarea");
+          txt.innerHTML = html;
+          return txt.value;
+        }
+        var i = 0;
+        var txt = '{{ prediction_text|safe }}';
+        txt = txt.slice(1,-1);  // remove quotes
+        txt = decodeHtml(txt)
+        var speed = 50;
+        function typeWriter() {
+          if (i < txt.length) {
+            let text = txt.charAt(i);
+            document.getElementById("demo").innerHTML += text=== "\n" ? "<br/>": text;
+            i++;
+            setTimeout(typeWriter, speed);
+          }
+          document.getElementById("1").value = '{{ genre }}'
+          document.getElementById("2").value = '{{ max_new_tokens }}'
+          document.getElementById("3").value = '{{ context }}'
+          document.getElementById("4").value = '{{ seed }}'
+          if (!'{{ seed }}') {document.getElementById("4").value = "1"}
+        }
+      </script>      
+
+    </div>
+  </body>
+</html>
